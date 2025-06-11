@@ -1,1093 +1,1232 @@
 <html>
-<head>
+  <head>
     <title>PIN BUBBLES - Enhanced Edition</title>
     <style>
-        @import url("https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;700&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;700&display=swap");
 
-        body {
-            background-color: black;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            font-family: "Chivo Mono", monospace;
-            margin: 0;
-            overflow: hidden;
-            color: white;
-            user-select: none;
-            position: relative;
-        }
+      body {
+        background-color: black;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        font-family: "Chivo Mono", monospace;
+        margin: 0;
+        overflow: hidden;
+        color: white;
+        user-select: none;
+        position: relative;
+      }
 
-        .bubble {
-            position: absolute;
-            width: 55px;
-            height: 55px;
-            padding: 15px;
-            cursor: pointer;
-            background-size: cover;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-            box-shadow: none;
-            z-index: 2;
-        }
+      .bubble {
+        position: absolute;
+        width: 55px;
+        height: 55px;
+        padding: 15px;
+        cursor: pointer;
+        background-size: cover;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+        box-shadow: none;
+        z-index: 2;
+      }
 
-        .bubble:hover {
-            transform: scale(1.1);
-        }
+      .bubble:hover {
+        transform: scale(1.1);
+      }
 
-        .bubble.multiplier {
-            box-shadow: 0 0 15px 3px rgba(255, 0, 0, 0.8);
-            animation: multiplierGlow 1s infinite alternate;
-        }
+      .bubble.multiplier {
+        box-shadow: 0 0 15px 3px rgba(255, 0, 0, 0.8);
+        animation: multiplierGlow 1s infinite alternate;
+      }
 
-        .bubble.golden {
-            box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.9);
-            animation: goldenGlow 1.5s infinite alternate;
-        }
+      .bubble.golden {
+        box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.9);
+        animation: goldenGlow 1.5s infinite alternate;
+      }
 
-        .bubble.poison {
-            box-shadow: 0 0 15px 3px rgba(128, 0, 128, 0.8);
-            animation: poisonGlow 1s infinite alternate;
-        }
+      .bubble.poison {
+        box-shadow: 0 0 15px 3px rgba(128, 0, 128, 0.8);
+        animation: poisonGlow 1s infinite alternate;
+      }
 
-        @keyframes multiplierGlow {
-            0% { box-shadow: 0 0 10px 2px rgba(255, 0, 0, 0.6); }
-            100% { box-shadow: 0 0 15px 3px rgba(255, 100, 0, 0.8); }
+      @keyframes multiplierGlow {
+        0% {
+          box-shadow: 0 0 10px 2px rgba(255, 0, 0, 0.6);
         }
+        100% {
+          box-shadow: 0 0 15px 3px rgba(255, 100, 0, 0.8);
+        }
+      }
 
-        @keyframes goldenGlow {
-            0% { box-shadow: 0 0 15px 3px rgba(255, 215, 0, 0.7); }
-            100% { box-shadow: 0 0 25px 7px rgba(255, 255, 0, 1); }
+      @keyframes goldenGlow {
+        0% {
+          box-shadow: 0 0 15px 3px rgba(255, 215, 0, 0.7);
         }
+        100% {
+          box-shadow: 0 0 25px 7px rgba(255, 255, 0, 1);
+        }
+      }
 
-        @keyframes poisonGlow {
-            0% { box-shadow: 0 0 10px 2px rgba(128, 0, 128, 0.6); }
-            100% { box-shadow: 0 0 15px 3px rgba(200, 0, 200, 0.8); }
+      @keyframes poisonGlow {
+        0% {
+          box-shadow: 0 0 10px 2px rgba(128, 0, 128, 0.6);
         }
+        100% {
+          box-shadow: 0 0 15px 3px rgba(200, 0, 200, 0.8);
+        }
+      }
 
-        .score-container {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            z-index: 20;
-            font-size: 36px;
-            font-weight: bold;
-            color: #ffd000;
-            user-select: none;
-            pointer-events: none;
-            transition: font-size 0.3s ease;
-        }
+      .score-container {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        z-index: 20;
+        font-size: 36px;
+        font-weight: bold;
+        color: #ffd000;
+        user-select: none;
+        pointer-events: none;
+        transition: font-size 0.3s ease;
+      }
 
-        .game-info {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            z-index: 20;
-            text-align: right;
-            font-size: 18px;
-            color: #fff;
-        }
+      .game-info {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        z-index: 20;
+        text-align: right;
+        font-size: 18px;
+        color: #fff;
+      }
 
-        .time-bar {
-            position: absolute;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            z-index: 20;
-            display: none;
-        }
+      .time-bar {
+        position: absolute;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 300px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        overflow: hidden;
+        z-index: 20;
+        display: none;
+      }
 
-        .time-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #FFC107, #F44336);
-            transition: width 0.1s linear;
-            width: 100%;
-        }
+      .time-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4caf50, #ffc107, #f44336);
+        transition: width 0.1s linear;
+        width: 100%;
+      }
 
-        .lives-container {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            z-index: 20;
-            font-size: 24px;
-            color: #ff4757;
-            display: none;
-        }
+      .lives-container {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        z-index: 20;
+        font-size: 24px;
+        color: #ff4757;
+        display: none;
+      }
 
-        .level-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+      .level-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
 
-        .level-indicator img {
-            width: 380px;
-            height: 380px;
-            margin-bottom: 10px;
-            z-index: 1;
-            opacity: 0.3;
-        }
+      .level-indicator img {
+        width: 380px;
+        height: 380px;
+        margin-bottom: 10px;
+        z-index: 1;
+        opacity: 0.3;
+      }
 
-        .level-indicator span {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 48px;
-            font-weight: bold;
-            pointer-events: none;
-            z-index: 3;
-            user-select: none;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff);
-            background-size: 400% 400%;
-            animation: gradientShift 3s ease infinite;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-        }
+      .level-indicator span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 48px;
+        font-weight: bold;
+        pointer-events: none;
+        z-index: 3;
+        user-select: none;
+        background: linear-gradient(
+          45deg,
+          #ff6b6b,
+          #4ecdc4,
+          #45b7d1,
+          #96ceb4,
+          #feca57,
+          #ff9ff3,
+          #54a0ff
+        );
+        background-size: 400% 400%;
+        animation: gradientShift 3s ease infinite;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
         }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
 
-        .controls {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 30;
-            display: none;
-            flex-direction: column;
-            gap: 25px;
-            background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(50, 30, 80, 0.95));
-            backdrop-filter: blur(15px);
-            padding: 40px 50px;
-            border-radius: 20px;
-            font-size: 16px;
-            max-width: 350px;
-            user-select: text;
-            animation: fadeIn 0.4s ease-out;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
+      .controls {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 30;
+        display: none;
+        flex-direction: column;
+        gap: 25px;
+        background: linear-gradient(
+          135deg,
+          rgba(30, 30, 50, 0.95),
+          rgba(50, 30, 80, 0.95)
+        );
+        backdrop-filter: blur(15px);
+        padding: 40px 50px;
+        border-radius: 20px;
+        font-size: 16px;
+        max-width: 350px;
+        user-select: text;
+        animation: fadeIn 0.4s ease-out;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
 
-        .controls h3 {
-            margin: 0 0 20px 0;
-            text-align: center;
-            color: #ffd000;
-            font-size: 20px;
-            text-shadow: 0 0 10px rgba(255, 208, 0, 0.5);
-        }
+      .controls h3 {
+        margin: 0 0 20px 0;
+        text-align: center;
+        color: #ffd000;
+        font-size: 20px;
+        text-shadow: 0 0 10px rgba(255, 208, 0, 0.5);
+      }
 
-        .controls label {
-            width: 100%;
-            display: block;
-            color: #e0e0e0;
-            background: linear-gradient(135deg, rgba(40, 40, 60, 0.8), rgba(60, 40, 90, 0.8));
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            font-family: "Chivo Mono", monospace;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
+      .controls label {
+        width: 100%;
+        display: block;
+        color: #e0e0e0;
+        background: linear-gradient(
+          135deg,
+          rgba(40, 40, 60, 0.8),
+          rgba(60, 40, 90, 0.8)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        padding: 15px;
+        font-family: "Chivo Mono", monospace;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
 
-        .controls select, .controls button {
-            width: 100%;
-            display: block;
-            color: white;
-            background: linear-gradient(135deg, rgba(40, 40, 60, 0.9), rgba(60, 40, 90, 0.9));
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            font-family: "Chivo Mono", monospace;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
+      .controls select,
+      .controls button {
+        width: 100%;
+        display: block;
+        color: white;
+        background: linear-gradient(
+          135deg,
+          rgba(40, 40, 60, 0.9),
+          rgba(60, 40, 90, 0.9)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        padding: 15px;
+        font-family: "Chivo Mono", monospace;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
 
-        .controls label:hover,
-        .controls select:hover,
-        .controls button:hover {
-            background: linear-gradient(135deg, rgba(60, 60, 80, 0.9), rgba(80, 60, 110, 0.9));
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-        }
+      .controls label:hover,
+      .controls select:hover,
+      .controls button:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(60, 60, 80, 0.9),
+          rgba(80, 60, 110, 0.9)
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+      }
 
-        .game-mode-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+      .game-mode-selector {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
 
-        .mode-button {
-            padding: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            background: linear-gradient(135deg, rgba(40, 40, 60, 0.8), rgba(60, 40, 90, 0.8));
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            font-size: 12px;
-        }
+      .mode-button {
+        padding: 15px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          rgba(40, 40, 60, 0.8),
+          rgba(60, 40, 90, 0.8)
+        );
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-size: 12px;
+      }
 
-        .mode-button.active {
-            border-color: #ffd000;
-            background: linear-gradient(135deg, rgba(255, 208, 0, 0.2), rgba(255, 215, 0, 0.1));
-            box-shadow: 0 0 15px rgba(255, 208, 0, 0.3);
-        }
+      .mode-button.active {
+        border-color: #ffd000;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 208, 0, 0.2),
+          rgba(255, 215, 0, 0.1)
+        );
+        box-shadow: 0 0 15px rgba(255, 208, 0, 0.3);
+      }
 
-        .pause-info {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 25px;
-            z-index: 20;
-            user-select: none;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff);
-            background-size: 400% 400%;
-            animation: gradientShift 3s ease infinite;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-        }
+      .pause-info {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 25px;
+        z-index: 20;
+        user-select: none;
+        background: linear-gradient(
+          45deg,
+          #ff6b6b,
+          #4ecdc4,
+          #45b7d1,
+          #96ceb4,
+          #feca57,
+          #ff9ff3,
+          #54a0ff
+        );
+        background-size: 400% 400%;
+        animation: gradientShift 3s ease infinite;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      }
 
-        .bubble-multiplier {
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            background-color: red;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 9px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            user-select: none;
-            box-shadow: 0 0 8px 2px rgba(255, 0, 0, 0.6);
-            transition: transform 0.3s ease-out, background-color 0.3s ease;
-            z-index: 4;
-        }
+      .bubble-multiplier {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        background-color: red;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 9px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        user-select: none;
+        box-shadow: 0 0 8px 2px rgba(255, 0, 0, 0.6);
+        transition: transform 0.3s ease-out, background-color 0.3s ease;
+        z-index: 4;
+      }
 
-        .bubble-golden {
-            background-color: gold;
-            box-shadow: 0 0 8px 2px rgba(255, 215, 0, 0.8);
-        }
+      .bubble-golden {
+        background-color: gold;
+        box-shadow: 0 0 8px 2px rgba(255, 215, 0, 0.8);
+      }
 
-        .bubble-poison {
-            background-color: purple;
-            box-shadow: 0 0 8px 2px rgba(128, 0, 128, 0.8);
-        }
+      .bubble-poison {
+        background-color: purple;
+        box-shadow: 0 0 8px 2px rgba(128, 0, 128, 0.8);
+      }
 
-        .game-over {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 40;
-            background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(50, 30, 80, 0.95));
-            backdrop-filter: blur(15px);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            display: none;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
+      .game-over {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 40;
+        background: linear-gradient(
+          135deg,
+          rgba(30, 30, 50, 0.95),
+          rgba(50, 30, 80, 0.95)
+        );
+        backdrop-filter: blur(15px);
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        display: none;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+      }
 
-        .particle {
-            position: absolute;
-            pointer-events: none;
-            border-radius: 50%;
-            z-index: 5;
-        }
+      .particle {
+        position: absolute;
+        pointer-events: none;
+        border-radius: 50%;
+        z-index: 5;
+      }
 
-        @keyframes particleFloat {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-100px) scale(0);
-            }
+      @keyframes particleFloat {
+        0% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
         }
+        100% {
+          opacity: 0;
+          transform: translateY(-100px) scale(0);
+        }
+      }
 
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
         }
+        100% {
+          opacity: 1;
+        }
+      }
 
-        .combo-display {
-            position: absolute;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 25;
-            font-size: 24px;
-            color: #ff6b6b;
-            display: none;
-            animation: comboGlow 0.5s ease-out;
-        }
+      .combo-display {
+        position: absolute;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 25;
+        font-size: 24px;
+        color: #ff6b6b;
+        display: none;
+        animation: comboGlow 0.5s ease-out;
+      }
 
-        @keyframes comboGlow {
-            0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
-            50% { transform: translateX(-50%) scale(1.2); opacity: 1; }
-            100% { transform: translateX(-50%) scale(1); opacity: 1; }
+      @keyframes comboGlow {
+        0% {
+          transform: translateX(-50%) scale(0.5);
+          opacity: 0;
         }
-        option {
-            background-color: #000000;
+        50% {
+          transform: translateX(-50%) scale(1.2);
+          opacity: 1;
         }
+        100% {
+          transform: translateX(-50%) scale(1);
+          opacity: 1;
+        }
+      }
+      option {
+        background-color: #000000;
+      }
     </style>
-</head>
-<body>
-    <div class="score-container" id="score-container">Score: <span id="score-id">0</span></div>
-    
+  </head>
+  <body>
+    <div class="score-container" id="score-container">
+      Score: <span id="score-id">0</span>
+    </div>
+
     <div class="game-info" id="game-info">
-        <div>Mode: <span id="current-mode">Classic</span></div>
-        <div id="high-score">Best: 0</div>
+      <div>Mode: <span id="current-mode">Classic</span></div>
+      <div id="high-score">Best: 0</div>
     </div>
 
     <div class="time-bar" id="time-bar">
-        <div class="time-fill" id="time-fill"></div>
+      <div class="time-fill" id="time-fill"></div>
     </div>
 
     <div class="lives-container" id="lives-container">
-        Lives: <span id="lives-count">3</span> ❤️
+      Lives: <span id="lives-count">3</span> ❤️
     </div>
 
     <div class="combo-display" id="combo-display">
-        COMBO x<span id="combo-count">1</span>!
+      COMBO x<span id="combo-count">1</span>!
     </div>
 
     <div class="level-indicator" id="level-indicator">
-        <img id="level-logo" src="https://i.ibb.co/wNnKNkm2/pin-ai-logo-2-removebg-preview.png" alt="Level Logo">
-        <span id="level-text">Level 1</span>
+      <img
+        id="level-logo"
+        src="https://i.ibb.co/wNnKNkm2/pin-ai-logo-2-removebg-preview.png"
+        alt="Level Logo"
+      />
+      <span id="level-text">Level 1</span>
     </div>
 
     <div class="controls" id="controls">
-        <h3>🎮 GAME SETTINGS</h3>
-        
-        <div class="game-mode-selector">
-            <div class="mode-button active" data-mode="classic">🎯 Classic</div>
-            <div class="mode-button" data-mode="timed">⏰ Timed (60s)</div>
-            <div class="mode-button" data-mode="survival">💀 Survival</div>
-            <div class="mode-button" data-mode="infinite">♾️ Infinite</div>
-        </div>
+      <h3>🎮 GAME SETTINGS</h3>
 
-        <button id="start-game">🚀 Start Game</button>
-        <button id="reset-game">🔄 Reset Game</button>
-        
-        <label for="bubble-selector">🫧 Bubble color:</label>
-        <select id="bubble-selector">
-            <option value="random" selected>🎲 Random</option>
-            <option value="0">🟢 Turquoise</option>
-            <option value="1">🔵 Blue</option>
-            <option value="2">🟣 Purple</option>
-            <option value="3">🟠 Orange</option>
-            <option value="4">🌈 Gradient</option>
-            <option value="5">⚪ Default</option>
-        </select>
+      <div class="game-mode-selector">
+        <div class="mode-button active" data-mode="classic">🎯 Classic</div>
+        <div class="mode-button" data-mode="timed">⏰ Timed (60s)</div>
+        <div class="mode-button" data-mode="survival">💀 Survival</div>
+        <div class="mode-button" data-mode="infinite">♾️ Infinite</div>
+      </div>
 
-        <label for="bg-selector">🖼️ Background:</label>
-        <select id="bg-selector">
-            <option value="random">🎲 Random (change every 50 points)</option>
-            <option value="1">⭐ Starfall</option> 
-            <option value="2">🏔️ Mountains</option>
-            <option value="3">😊 Happy girl</option>
-            <option value="4">🐱 Cutie girl with cats</option>
-            <option value="5">🌲 Forest</option>
-        </select>
+      <button id="start-game">🚀 Start Game</button>
+      <button id="reset-game">🔄 Reset Game</button>
 
-        <label for="score-color-selector">🏆 Score color:</label>
-        <select id="score-color-selector">
-            <option value="#ffd000" selected>🟡 Golden</option>
-            <option value="#ff6b6b">🔴 Red</option>
-            <option value="#4ecdc4">🔷 Cyan</option>
-            <option value="#a55eea">🟣 Purple</option>
-            <option value="#26de81">🟢 Green</option>
-        </select>
+      <label for="bubble-selector">🫧 Bubble color:</label>
+      <select id="bubble-selector">
+        <option value="random" selected>🎲 Random</option>
+        <option value="0">🟢 Turquoise</option>
+        <option value="1">🔵 Blue</option>
+        <option value="2">🟣 Purple</option>
+        <option value="3">🟠 Orange</option>
+        <option value="4">🌈 Gradient</option>
+        <option value="5">⚪ Default</option>
+      </select>
 
-        <label for="volume-slider">🔊 Volume:</label>
-        <input type="range" id="volume-slider" min="0" max="100" value="50">
+      <label for="bg-selector">🖼️ Background:</label>
+      <select id="bg-selector">
+        <option value="random">🎲 Random (change every 50 points)</option>
+        <option value="1">⭐ Starfall</option>
+        <option value="2">🏔️ Mountains</option>
+        <option value="3">😊 Happy girl</option>
+        <option value="4">🐱 Cutie girl with cats</option>
+        <option value="5">🌲 Forest</option>
+      </select>
+
+      <label for="score-color-selector">🏆 Score color:</label>
+      <select id="score-color-selector">
+        <option value="#ffd000" selected>🟡 Golden</option>
+        <option value="#ff6b6b">🔴 Red</option>
+        <option value="#4ecdc4">🔷 Cyan</option>
+        <option value="#a55eea">🟣 Purple</option>
+        <option value="#26de81">🟢 Green</option>
+      </select>
+
+      <label for="volume-slider">🔊 Volume:</label>
+      <input type="range" id="volume-slider" min="0" max="100" value="50" />
     </div>
 
     <div class="game-over" id="game-over">
-        <h2>🎮 Game Over!</h2>
-        <p>Final Score: <span id="final-score">0</span></p>
-        <p id="new-record" style="display:none; color: #ffd000;">🎉 New Record!</p>
-        <button onclick="resetGame(); controls.style.display = 'flex';">Play Again</button>
+      <h2>🎮 Game Over!</h2>
+      <p>Final Score: <span id="final-score">0</span></p>
+      <p id="new-record" style="display: none; color: #ffd000">
+        🎉 New Record!
+      </p>
+      <button onclick="resetGame(); controls.style.display = 'flex';">
+        Play Again
+      </button>
     </div>
 
     <div id="bubble-container"></div>
 
-    <div class="pause-info">Press <b>SPACE</b> to Pause/Resume | <b>R</b> to Reset</div>
+    <div class="pause-info">
+      Press <b>SPACE</b> to Pause/Resume | <b>R</b> to Reset
+    </div>
 
     <script>
-        let gameState = {
-            isPaused: false,
-            gameMode: 'classic',
-            isGameActive: false,
-            score: 0,
-            lives: 3,
-            timeLeft: 60,
-            combo: 0,
-            comboTimer: null,
-            poppedInRow: 0,
-            missedInRow: 0
-        };
+      let gameState = {
+        isPaused: false,
+        gameMode: "classic",
+        isGameActive: false,
+        score: 0,
+        lives: 3,
+        timeLeft: 60,
+        combo: 0,
+        comboTimer: null,
+        poppedInRow: 0,
+        missedInRow: 0,
+      };
 
-        let audioContext;
-        let audioVolume = 0.5;
+      let audioContext;
+      let audioVolume = 0.5;
 
-        const scoreElement = document.getElementById("score-id");
-        const levelIndicator = document.getElementById("level-indicator");
-        const levelLogo = document.getElementById("level-logo");
-        const levelText = document.getElementById("level-text");
-        const bubbleContainer = document.getElementById("bubble-container");
-        const controls = document.getElementById("controls");
-        const gameInfo = document.getElementById("game-info");
-        const currentModeElement = document.getElementById("current-mode");
-        const highScoreElement = document.getElementById("high-score");
-        const timeBar = document.getElementById("time-bar");
-        const timeFill = document.getElementById("time-fill");
-        const livesContainer = document.getElementById("lives-container");
-        const livesCount = document.getElementById("lives-count");
-        const comboDisplay = document.getElementById("combo-display");
-        const comboCount = document.getElementById("combo-count");
-        const gameOverScreen = document.getElementById("game-over");
-        const finalScore = document.getElementById("final-score");
-        const newRecord = document.getElementById("new-record");
+      const scoreElement = document.getElementById("score-id");
+      const levelIndicator = document.getElementById("level-indicator");
+      const levelLogo = document.getElementById("level-logo");
+      const levelText = document.getElementById("level-text");
+      const bubbleContainer = document.getElementById("bubble-container");
+      const controls = document.getElementById("controls");
+      const gameInfo = document.getElementById("game-info");
+      const currentModeElement = document.getElementById("current-mode");
+      const highScoreElement = document.getElementById("high-score");
+      const timeBar = document.getElementById("time-bar");
+      const timeFill = document.getElementById("time-fill");
+      const livesContainer = document.getElementById("lives-container");
+      const livesCount = document.getElementById("lives-count");
+      const comboDisplay = document.getElementById("combo-display");
+      const comboCount = document.getElementById("combo-count");
+      const gameOverScreen = document.getElementById("game-over");
+      const finalScore = document.getElementById("final-score");
+      const newRecord = document.getElementById("new-record");
 
-        const bubbleSelector = document.getElementById("bubble-selector");
-        const bgSelector = document.getElementById("bg-selector");
-        const scoreColorSelector = document.getElementById("score-color-selector");
-        const volumeSlider = document.getElementById("volume-slider");
-        const startGameButton = document.getElementById("start-game");
-        const resetGameButton = document.getElementById("reset-game");
+      const bubbleSelector = document.getElementById("bubble-selector");
+      const bgSelector = document.getElementById("bg-selector");
+      const scoreColorSelector = document.getElementById(
+        "score-color-selector"
+      );
+      const volumeSlider = document.getElementById("volume-slider");
+      const startGameButton = document.getElementById("start-game");
+      const resetGameButton = document.getElementById("reset-game");
 
-        const logos = [
-            "https://i.ibb.co/Q3sDVQgn/7.png",
-            "https://i.ibb.co/j9w86c4S/6.png",
-            "https://i.ibb.co/HTqW0vGk/5.png",
-            "https://i.ibb.co/JWPgY9nP/4.png",
-            "https://i.ibb.co/LdHqVvYC/3.png",
-            "https://i.ibb.co/wNnKNkm2/pin-ai-logo-2-removebg-preview.png"
-        ];
+      const logos = [
+        "https://i.ibb.co/Q3sDVQgn/7.png",
+        "https://i.ibb.co/j9w86c4S/6.png",
+        "https://i.ibb.co/HTqW0vGk/5.png",
+        "https://i.ibb.co/JWPgY9nP/4.png",
+        "https://i.ibb.co/LdHqVvYC/3.png",
+        "https://i.ibb.co/wNnKNkm2/pin-ai-logo-2-removebg-preview.png",
+      ];
 
-        const bubbleImages = [
-            "https://i.ibb.co/Q3sDVQgn/7.png",
-            "https://i.ibb.co/j9w86c4S/6.png",
-            "https://i.ibb.co/HTqW0vGk/5.png",
-            "https://i.ibb.co/JWPgY9nP/4.png",
-            "https://i.ibb.co/LdHqVvYC/3.png",
-            "https://i.ibb.co/wNnKNkm2/pin-ai-logo-2-removebg-preview.png"
-        ];
+      const bubbleImages = [
+        "https://i.ibb.co/Q3sDVQgn/7.png",
+        "https://i.ibb.co/j9w86c4S/6.png",
+        "https://i.ibb.co/HTqW0vGk/5.png",
+        "https://i.ibb.co/JWPgY9nP/4.png",
+        "https://i.ibb.co/LdHqVvYC/3.png",
+        "https://i.ibb.co/wNnKNkm2/pin-ai-logo-2-removebg-preview.png",
+      ];
 
-        const backgrounds = {
-            1: "https://blogger.googleusercontent.com/img/a/AVvXsEi9kwzKLVmTYUBYPFGPnSh560foXgCOAFloHOqSLOYocRejakfMVs4rpMZU90jaRiBwtyiguHaYS-kT2FY-2w-aFZx_7DB_g3FbIH0Q_wS1C-XOHqqbSadoT42qoByWph91USa3AQ8f2K35KWc-lQtEVIS3RPaNaiheX2ymhB4xM-HZsDGgg3PGScEQKVQ=s0",
-            2: "https://blogger.googleusercontent.com/img/a/AVvXsEhHVIAfFtfEGRk6Vr9jyu5K-5JYPSDjJ_L-8z_vCg-6B3C3mkWNpa1g2UKfBoMjKcswnGwXZCdabp5JPNhJryMcSyUNSgvPtJSLBe1jxcCna5meqhBQb5XHZYfYH9mTLDt_jcFvyJVPyBWj-AjTOK0y5AMxGwIt1UWu4CpcyMMJeqtjC3_NGYSwFYCCRT4=s1600-rw",
-            3: "https://blogger.googleusercontent.com/img/a/AVvXsEg_WjOJqKAmPEcIssTgESRKADEI5y9JB2EvDzNmxgrDle99kQ-4w4oM8OS8l4SMQUnx9Pt3rJ5JOQkw4rwZ_G-Wf5Kcf9o7nAE8O8-RQAdqWjnceZtl0eyTo5iaC6p--_bqPDwedI00-9GLB81VReCS5H-u98dSN3TCmj4pRNecVF96C3dyqzdPqeOwDlo=s0",
-            4: "https://blogger.googleusercontent.com/img/a/AVvXsEj9ZLD2g8xs-P2EF47FVt2E9g7pqgsI-GO3-cfMiAYRTrU20y6Yw4dhqman3kuRZLXrkUvIEKA162PDdi7XEFdTklU_LPkZlerzu1Sotm3fRtJrchbCH9j1lU8-Z7qbtU5HlnBlotR9GvEEiQSYDUwOQbTUaf7SN75sTYZCGDW4-HuyVItTGBvYFWGGc1TU=s0",
-            5: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbj_7Dq5IKp-8ZHM4jt363Hemw60UtFwkpCZLpvxelojG0R-WgYuj6UbROZ96aacoc1aIvQvaXJNu2H-8ogd1QqtBrNw-WzEQ1YWRh8Xme48iYD4crlF_ESrLIy9cg2UxKnPQW6mGVd2DAXE9RE6Sr-gmuz-tIB7c87InHKcWdP7wSknSIe_O-0O6MQ_c/s1600/wallpaper-for-pc-2025031817240416.jpg"
-        };
+      const backgrounds = {
+        1: "https://blogger.googleusercontent.com/img/a/AVvXsEi9kwzKLVmTYUBYPFGPnSh560foXgCOAFloHOqSLOYocRejakfMVs4rpMZU90jaRiBwtyiguHaYS-kT2FY-2w-aFZx_7DB_g3FbIH0Q_wS1C-XOHqqbSadoT42qoByWph91USa3AQ8f2K35KWc-lQtEVIS3RPaNaiheX2ymhB4xM-HZsDGgg3PGScEQKVQ=s0",
+        2: "https://blogger.googleusercontent.com/img/a/AVvXsEhHVIAfFtfEGRk6Vr9jyu5K-5JYPSDjJ_L-8z_vCg-6B3C3mkWNpa1g2UKfBoMjKcswnGwXZCdabp5JPNhJryMcSyUNSgvPtJSLBe1jxcCna5meqhBQb5XHZYfYH9mTLDt_jcFvyJVPyBWj-AjTOK0y5AMxGwIt1UWu4CpcyMMJeqtjC3_NGYSwFYCCRT4=s1600-rw",
+        3: "https://blogger.googleusercontent.com/img/a/AVvXsEg_WjOJqKAmPEcIssTgESRKADEI5y9JB2EvDzNmxgrDle99kQ-4w4oM8OS8l4SMQUnx9Pt3rJ5JOQkw4rwZ_G-Wf5Kcf9o7nAE8O8-RQAdqWjnceZtl0eyTo5iaC6p--_bqPDwedI00-9GLB81VReCS5H-u98dSN3TCmj4pRNecVF96C3dyqzdPqeOwDlo=s0",
+        4: "https://blogger.googleusercontent.com/img/a/AVvXsEj9ZLD2g8xs-P2EF47FVt2E9g7pqgsI-GO3-cfMiAYRTrU20y6Yw4dhqman3kuRZLXrkUvIEKA162PDdi7XEFdTklU_LPkZlerzu1Sotm3fRtJrchbCH9j1lU8-Z7qbtU5HlnBlotR9GvEEiQSYDUwOQbTUaf7SN75sTYZCGDW4-HuyVItTGBvYFWGGc1TU=s0",
+        5: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbj_7Dq5IKp-8ZHM4jt363Hemw60UtFwkpCZLpvxelojG0R-WgYuj6UbROZ96aacoc1aIvQvaXJNu2H-8ogd1QqtBrNw-WzEQ1YWRh8Xme48iYD4crlF_ESrLIy9cg2UxKnPQW6mGVd2DAXE9RE6Sr-gmuz-tIB7c87InHKcWdP7wSknSIe_O-0O6MQ_c/s1600/wallpaper-for-pc-2025031817240416.jpg",
+      };
 
-        const audioEffects = {
-            pop: { frequency: 800, duration: 0.1, type: 'sine' },
-            miss: { frequency: 200, duration: 0.3, type: 'sawtooth' },
-            levelUp: { frequency: 600, duration: 0.5, type: 'triangle' },
-            combo: { frequency: 1000, duration: 0.2, type: 'sine' },
-            gameOver: { frequency: 150, duration: 1, type: 'square' },
-            golden: { frequency: 1200, duration: 0.3, type: 'sine' },
-            poison: { frequency: 300, duration: 0.4, type: 'sawtooth' }
-        };
+      const audioEffects = {
+        pop: { frequency: 800, duration: 0.1, type: "sine" },
+        miss: { frequency: 200, duration: 0.3, type: "sawtooth" },
+        levelUp: { frequency: 600, duration: 0.5, type: "triangle" },
+        combo: { frequency: 1000, duration: 0.2, type: "sine" },
+        gameOver: { frequency: 150, duration: 1, type: "square" },
+        golden: { frequency: 1200, duration: 0.3, type: "sine" },
+        poison: { frequency: 300, duration: 0.4, type: "sawtooth" },
+      };
 
-        function initAudio() {
-            try {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            } catch (e) {
-                console.log('Web Audio API not supported');
+      function initAudio() {
+        try {
+          audioContext = new (window.AudioContext ||
+            window.webkitAudioContext)();
+        } catch (e) {
+          console.log("Web Audio API not supported");
+        }
+      }
+
+      function playSound(effectName) {
+        if (!audioContext || audioVolume === 0) return;
+
+        const effect = audioEffects[effectName];
+        if (!effect) return;
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value = effect.frequency;
+        oscillator.type = effect.type;
+
+        gainNode.gain.setValueAtTime(
+          audioVolume * 0.1,
+          audioContext.currentTime
+        );
+        gainNode.gain.exponentialRampToValueAtTime(
+          0.001,
+          audioContext.currentTime + effect.duration
+        );
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + effect.duration);
+      }
+
+      function createParticleEffect(x, y, color = "#ffd000") {
+        for (let i = 0; i < 8; i++) {
+          const particle = document.createElement("div");
+          particle.className = "particle";
+          particle.style.left = x + "px";
+          particle.style.top = y + "px";
+          particle.style.width = "4px";
+          particle.style.height = "4px";
+          particle.style.backgroundColor = color;
+          particle.style.animation = "particleFloat 1s ease-out forwards";
+          particle.style.animationDelay = i * 0.05 + "s";
+
+          const angle = (i / 8) * Math.PI * 2;
+          const distance = 30 + Math.random() * 20;
+          particle.style.transform = `translate(${
+            Math.cos(angle) * distance
+          }px, ${Math.sin(angle) * distance}px)`;
+
+          document.body.appendChild(particle);
+
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.parentNode.removeChild(particle);
             }
+          }, 1000);
+        }
+      }
+
+      function updateHighScore() {
+        const storageKey = `pinBubblesHighScore_${gameState.gameMode}`;
+        const currentHigh = parseInt(localStorage.getItem(storageKey) || "0");
+        if (gameState.score > currentHigh) {
+          localStorage.setItem(storageKey, gameState.score.toString());
+          highScoreElement.textContent = `Best: ${gameState.score}`;
+          return true;
+        }
+        return false;
+      }
+
+      function loadHighScore() {
+        const storageKey = `pinBubblesHighScore_${gameState.gameMode}`;
+        const highScore = parseInt(localStorage.getItem(storageKey) || "0");
+        highScoreElement.textContent = `Best: ${highScore}`;
+      }
+
+      function updateCombo() {
+        gameState.combo++;
+        if (gameState.combo > 1) {
+          comboCount.textContent = gameState.combo;
+          comboDisplay.style.display = "block";
+          playSound("combo");
+
+          setTimeout(() => {
+            comboDisplay.style.display = "none";
+          }, 1500);
         }
 
-        function playSound(effectName) {
-            if (!audioContext || audioVolume === 0) return;
-            
-            const effect = audioEffects[effectName];
-            if (!effect) return;
+        clearTimeout(gameState.comboTimer);
+        gameState.comboTimer = setTimeout(() => {
+          gameState.combo = 0;
+          comboDisplay.style.display = "none";
+        }, 3000);
+      }
 
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = effect.frequency;
-            oscillator.type = effect.type;
-            
-            gainNode.gain.setValueAtTime(audioVolume * 0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + effect.duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + effect.duration);
+      function resetCombo() {
+        gameState.combo = 0;
+        comboDisplay.style.display = "none";
+        clearTimeout(gameState.comboTimer);
+      }
+
+      function setupGameMode(mode) {
+        gameState.gameMode = mode;
+        currentModeElement.textContent =
+          mode.charAt(0).toUpperCase() + mode.slice(1);
+
+        timeBar.style.display = "none";
+        livesContainer.style.display = "none";
+
+        switch (mode) {
+          case "timed":
+            gameState.timeLeft = 60;
+            timeBar.style.display = "block";
+            updateTimeBar();
+            break;
+          case "survival":
+            gameState.lives = 3;
+            livesContainer.style.display = "block";
+            livesCount.textContent = gameState.lives;
+            break;
+        }
+        loadHighScore();
+      }
+
+      function updateTimeBar() {
+        const percentage = (gameState.timeLeft / 60) * 100;
+        timeFill.style.width = percentage + "%";
+      }
+
+      function startTimer() {
+        if (gameState.gameMode !== "timed") return;
+
+        const timer = setInterval(() => {
+          if (gameState.isPaused || !gameState.isGameActive) return;
+
+          gameState.timeLeft--;
+          updateTimeBar();
+
+          if (gameState.timeLeft <= 0) {
+            clearInterval(timer);
+            endGame();
+          }
+        }, 1000);
+      }
+
+      function getLevel(score) {
+        if (score >= 10000) return 20;
+        if (score >= 9000) return 19;
+        if (score >= 8000) return 18;
+        if (score >= 7000) return 17;
+        if (score >= 6000) return 16;
+        if (score >= 5500) return 15;
+        if (score >= 5000) return 14;
+        if (score >= 4500) return 13;
+        if (score >= 4000) return 12;
+        if (score >= 3500) return 11;
+        if (score >= 3000) return 10;
+        if (score >= 2500) return 9;
+        if (score >= 2000) return 8;
+        if (score >= 1500) return 7;
+        if (score >= 1200) return 6;
+        if (score >= 500) return 5;
+        if (score >= 400) return 4;
+        if (score >= 100) return 3;
+        if (score >= 50) return 2;
+        return 1;
+      }
+
+      function getBubbleCount(level) {
+        return Math.min(2 + Math.floor(level / 2), 12);
+      }
+
+      function getBubbleSpeed(score) {
+        let speed = 1;
+        if (score >= 50) speed = 0.6;
+        if (score >= 100) speed = 0.7;
+        if (score >= 150) speed = 0.8;
+        if (score >= 200) speed = 0.9;
+        if (score >= 300) speed = 1.0;
+        if (score > 300) speed += (score - 300) * 0.002;
+        return Math.min(speed, 2.0);
+      }
+
+      function getBubblePoints(score, bubbleType, combo = 1) {
+        let basePoints = Math.max(1, Math.floor(score / 25) + 1);
+        let multiplier = 1;
+
+        switch (bubbleType) {
+          case "multiplier":
+            multiplier = 2;
+            break;
+          case "golden":
+            multiplier = 5;
+            break;
+          case "poison":
+            return -basePoints * 2;
         }
 
-        function createParticleEffect(x, y, color = '#ffd000') {
-            for (let i = 0; i < 8; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
-                particle.style.width = '4px';
-                particle.style.height = '4px';
-                particle.style.backgroundColor = color;
-                particle.style.animation = 'particleFloat 1s ease-out forwards';
-                particle.style.animationDelay = (i * 0.05) + 's';
-                
-                const angle = (i / 8) * Math.PI * 2;
-                const distance = 30 + Math.random() * 20;
-                particle.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
-                
-                document.body.appendChild(particle);
-                
-                setTimeout(() => {
-                    if (particle.parentNode) {
-                        particle.parentNode.removeChild(particle);
-                    }
-                }, 1000);
+        const comboMultiplier = Math.min(combo, 10) * 0.1 + 1;
+        return Math.floor(basePoints * multiplier * comboMultiplier);
+      }
+
+      function updateScore(points) {
+        const oldScore = gameState.score;
+        gameState.score = Math.max(0, gameState.score + points);
+        scoreElement.textContent = gameState.score;
+
+        if (points > 0) {
+          updateCombo();
+          gameState.poppedInRow++;
+          gameState.missedInRow = 0;
+        } else if (points < 0) {
+          resetCombo();
+          gameState.poppedInRow = 0;
+          gameState.missedInRow++;
+        }
+
+        const currentLevel = getLevel(gameState.score);
+        const previousLevel = getLevel(oldScore);
+
+        if (Math.floor(gameState.score / 50) > Math.floor(oldScore / 50)) {
+          if (bgSelector.value === "random") {
+            updateBackground(true);
+          }
+        }
+
+        if (currentLevel !== previousLevel) {
+          updateLevelVisual(currentLevel);
+          updateBubbles(currentLevel);
+        }
+      }
+
+      function updateLevelVisual(level) {
+        const randomLogo = logos[Math.floor(Math.random() * logos.length)];
+        levelLogo.src = randomLogo;
+        levelText.textContent = `Level ${level}`;
+        if (level > 1) {
+          playSound("levelUp");
+        }
+      }
+
+      function updateBackground(forceChange = false) {
+        let val = bgSelector.value;
+        let imageUrl = "";
+
+        if (val === "random") {
+          if (forceChange || !document.body.style.backgroundImage) {
+            const keys = Object.keys(backgrounds);
+            const randKey = keys[Math.floor(Math.random() * keys.length)];
+            imageUrl = backgrounds[randKey];
+          }
+        } else {
+          imageUrl = backgrounds[val];
+        }
+
+        if (imageUrl) {
+          document.body.style.backgroundImage = `url(${imageUrl})`;
+        } else {
+          document.body.style.backgroundColor = "black";
+        }
+      }
+
+      function setBubbleImage(bubble) {
+        const sel = bubbleSelector.value;
+        if (sel === "random") {
+          const randomImg =
+            bubbleImages[Math.floor(Math.random() * bubbleImages.length)];
+          bubble.style.backgroundImage = `url(${randomImg})`;
+        } else {
+          const idx = parseInt(sel);
+          bubble.style.backgroundImage = `url(${bubbleImages[idx]})`;
+        }
+      }
+
+      function createSpecialBubbleIndicator(type) {
+        const indicator = document.createElement("div");
+        indicator.className = `bubble-${type}`;
+
+        switch (type) {
+          case "multiplier":
+            indicator.textContent = "x2";
+            break;
+          case "golden":
+            indicator.textContent = "★";
+            break;
+          case "poison":
+            indicator.textContent = "☠";
+            break;
+        }
+
+        return indicator;
+      }
+
+      function addNewBubble(index) {
+        if (!gameState.isGameActive) return;
+
+        let bubbleTop = -50;
+        let bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.style.position = "absolute";
+
+        let bubbleType = "normal";
+        const rand = Math.random();
+
+        if (rand < 0.05) bubbleType = "golden"; // 5% chance
+        else if (rand < 0.15) bubbleType = "poison"; // 10% chance
+        else if (rand < 0.35) bubbleType = "multiplier"; // 20% chance
+
+        if (bubbleType !== "normal") {
+          bubble.classList.add(bubbleType);
+          bubble.setAttribute("data-type", bubbleType);
+          const indicator = createSpecialBubbleIndicator(bubbleType);
+          bubble.appendChild(indicator);
+        }
+
+        setBubbleImage(bubble);
+        bubbleContainer.appendChild(bubble);
+
+        function startPosition() {
+          bubbleTop = -50;
+          const randomWidth = Math.max(
+            0,
+            Math.min(
+              Math.random() * (window.innerWidth - 85),
+              window.innerWidth - 85
+            )
+          );
+          bubble.style.left = randomWidth + "px";
+          setBubbleImage(bubble);
+        }
+
+        function onTick() {
+          if (!gameState.isGameActive) {
+            if (bubble.parentNode) {
+              bubble.parentNode.removeChild(bubble);
             }
-        }
+            return;
+          }
 
-        function updateHighScore() {
-            const currentHigh = parseInt(localStorage.getItem('pinBubblesHighScore') || '0');
-            if (gameState.score > currentHigh) {
-                localStorage.setItem('pinBubblesHighScore', gameState.score.toString());
-                highScoreElement.textContent = `Best: ${gameState.score}`;
-                return true;
+          if (!gameState.isPaused) {
+            bubbleTop += getBubbleSpeed(gameState.score);
+            bubble.style.top = bubbleTop + "px";
+
+            if (bubbleTop >= window.innerHeight - 85) {
+              if (gameState.gameMode !== "infinite") {
+                handleMiss();
+              }
+              startPosition();
             }
-            return false;
+          }
+          requestAnimationFrame(onTick);
         }
-
-        function loadHighScore() {
-            const highScore = parseInt(localStorage.getItem('pinBubblesHighScore') || '0');
-            highScoreElement.textContent = `Best: ${highScore}`;
-        }
-
-        function updateCombo() {
-            gameState.combo++;
-            if (gameState.combo > 1) {
-                comboCount.textContent = gameState.combo;
-                comboDisplay.style.display = 'block';
-                playSound('combo');
-                
-                setTimeout(() => {
-                    comboDisplay.style.display = 'none';
-                }, 1500);
-            }
-
-            clearTimeout(gameState.comboTimer);
-            gameState.comboTimer = setTimeout(() => {
-                gameState.combo = 0;
-                comboDisplay.style.display = 'none';
-            }, 3000);
-        }
-
-        function resetCombo() {
-            gameState.combo = 0;
-            comboDisplay.style.display = 'none';
-            clearTimeout(gameState.comboTimer);
-        }
-
-        function setupGameMode(mode) {
-            gameState.gameMode = mode;
-            currentModeElement.textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
-            
-            timeBar.style.display = 'none';
-            livesContainer.style.display = 'none';
-            
-            switch (mode) {
-                case 'timed':
-                    gameState.timeLeft = 60;
-                    timeBar.style.display = 'block';
-                    updateTimeBar();
-                    break;
-                case 'survival':
-                    gameState.lives = 3;
-                    livesContainer.style.display = 'block';
-                    livesCount.textContent = gameState.lives;
-                    break;
-            }
-        }
-
-        function updateTimeBar() {
-            const percentage = (gameState.timeLeft / 60) * 100;
-            timeFill.style.width = percentage + '%';
-        }
-
-        function startTimer() {
-            if (gameState.gameMode !== 'timed') return;
-            
-            const timer = setInterval(() => {
-                if (gameState.isPaused || !gameState.isGameActive) return;
-                
-                gameState.timeLeft--;
-                updateTimeBar();
-                
-                if (gameState.timeLeft <= 0) {
-                    clearInterval(timer);
-                    endGame();
-                }
-            }, 1000);
-        }
-
-        function getLevel(score) {
-            if (score >= 500) return 10;
-            if (score >= 400) return 9;
-            if (score >= 300) return 8;
-            if (score >= 250) return 7;
-            if (score >= 200) return 6;
-            if (score >= 150) return 5;
-            if (score >= 100) return 4;
-            if (score >= 75) return 3;
-            if (score >= 50) return 2;
-            return 1;
-        }
-
-        function getBubbleCount(level) {
-            return Math.min(2 + level - 1, 8);
-        }
-
-        function getBubbleSpeed(score) {
-            let speed = 0.5;
-            if (score >= 50) speed = 0.6;
-            if (score >= 100) speed = 0.7;
-            if (score >= 150) speed = 0.8;
-            if (score >= 200) speed = 0.9;
-            if (score >= 300) speed = 1.0;
-            if (score > 300) speed += (score - 300) * 0.002;
-            return Math.min(speed, 2.0);
-        }
-
-        function getBubblePoints(score, bubbleType, combo = 1) {
-            let basePoints = Math.max(1, Math.floor(score / 25) + 1);
-            let multiplier = 1;
-            
-            switch (bubbleType) {
-                case 'multiplier':
-                    multiplier = 2;
-                    break;
-                case 'golden':
-                    multiplier = 5;
-                    break;
-                case 'poison':
-                    return -basePoints * 2;
-            }
-            
-            const comboMultiplier = Math.min(combo, 10) * 0.1 + 1;
-            return Math.floor(basePoints * multiplier * comboMultiplier);
-        }
-
-        function updateScore(points) {
-            const oldScore = gameState.score;
-            gameState.score = Math.max(0, gameState.score + points);
-            scoreElement.textContent = gameState.score;
-            
-            if (points > 0) {
-                updateCombo();
-                gameState.poppedInRow++;
-                gameState.missedInRow = 0;
-            } else if (points < 0) {
-                resetCombo();
-                gameState.poppedInRow = 0;
-                gameState.missedInRow++;
-            }
-            
-            const currentLevel = getLevel(gameState.score);
-            const previousLevel = getLevel(oldScore);
-            
-            if (Math.floor(gameState.score / 50) > Math.floor(oldScore / 50)) {
-                if (bgSelector.value === "random") {
-                    updateBackground(true);
-                }
-            }
-            
-            if (currentLevel !== previousLevel) {
-                updateLevelVisual(currentLevel);
-                updateBubbles(currentLevel);
-            }
-        }
-
-        function updateLevelVisual(level) {
-            const randomLogo = logos[Math.floor(Math.random() * logos.length)];
-            levelLogo.src = randomLogo;
-            levelText.textContent = `Level ${level}`;
-            if (level > 1) {
-                playSound('levelUp');
-            }
-        }
-
-        function updateBackground(forceChange = false) {
-            let val = bgSelector.value;
-            let imageUrl = '';
-
-            if (val === "random") {
-                if (forceChange || !document.body.style.backgroundImage) {
-                    const keys = Object.keys(backgrounds);
-                    const randKey = keys[Math.floor(Math.random() * keys.length)];
-                    imageUrl = backgrounds[randKey];
-                }
-            } else {
-                imageUrl = backgrounds[val];
-            }
-
-            if (imageUrl) {
-                document.body.style.backgroundImage = `url(${imageUrl})`;
-            } else {
-                document.body.style.backgroundColor = 'black'; 
-            }
-        }
-
-        function setBubbleImage(bubble) {
-            const sel = bubbleSelector.value;
-            if (sel === "random") {
-                const randomImg = bubbleImages[Math.floor(Math.random() * bubbleImages.length)];
-                bubble.style.backgroundImage = `url(${randomImg})`;
-            } else {
-                const idx = parseInt(sel);
-                bubble.style.backgroundImage = `url(${bubbleImages[idx]})`;
-            }
-        }
-
-        function createSpecialBubbleIndicator(type) {
-            const indicator = document.createElement("div");
-            indicator.className = `bubble-${type}`;
-            
-            switch (type) {
-                case 'multiplier':
-                    indicator.textContent = "x2";
-                    break;
-                case 'golden':
-                    indicator.textContent = "★";
-                    break;
-                case 'poison':
-                    indicator.textContent = "☠";
-                    break;
-            }
-            
-            return indicator;
-        }
-
-        function addNewBubble(index) {
-            if (!gameState.isGameActive) return;
-            
-            let bubbleTop = -50;
-            let bubble = document.createElement("div");
-            bubble.className = "bubble";
-            bubble.style.position = 'absolute';
-
-            let bubbleType = 'normal';
-            const rand = Math.random();
-            
-            if (rand < 0.05) bubbleType = 'golden';        // 5% chance
-            else if (rand < 0.15) bubbleType = 'poison';   // 10% chance
-            else if (rand < 0.35) bubbleType = 'multiplier'; // 20% chance
-            
-            if (bubbleType !== 'normal') {
-                bubble.classList.add(bubbleType);
-                bubble.setAttribute('data-type', bubbleType);
-                const indicator = createSpecialBubbleIndicator(bubbleType);
-                bubble.appendChild(indicator);
-            }
-
-            setBubbleImage(bubble);
-            bubbleContainer.appendChild(bubble);
-
-            function startPosition() {
-                bubbleTop = -50;
-                const randomWidth = Math.random() * (window.innerWidth - 85);
-                bubble.style.left = randomWidth + "px";
-                setBubbleImage(bubble);
-            }
-
-            function onTick() {
-                if (!gameState.isGameActive) {
-                    if (bubble.parentNode) {
-                        bubble.parentNode.removeChild(bubble);
-                    }
-                    return;
-                }
-                
-                if (!gameState.isPaused) {
-                    bubbleTop += getBubbleSpeed(gameState.score); 
-                    bubble.style.top = bubbleTop + "px";
-                    
-                    if (bubbleTop >= window.innerHeight - 85) {
-                    if (gameState.gameMode !== 'infinite') {
-                 handleMiss();
-                 }
-                 startPosition();
-            }
-                }
-                requestAnimationFrame(onTick);
-            }
 
         function handleMiss() {
-        playSound('miss');
-    
-            if (bubbleType === 'poison') {
-        return;
-        }
-    
-        if (gameState.gameMode === 'survival') {
+          playSound("miss");
+
+          if (bubbleType === "poison") {
+            return;
+          }
+
+          if (gameState.gameMode === "survival") {
             gameState.lives--;
             livesCount.textContent = gameState.lives;
-            
+
             if (gameState.lives <= 0) {
-                endGame();
-                return;
+              endGame();
+              return;
             }
-        } else {
+          } else {
             const currentLevel = getLevel(gameState.score);
-            const penalty = bubbleType === 'golden' ? -10 : -currentLevel;  
+            const penalty = bubbleType === "golden" ? -10 : -currentLevel;
             updateScore(penalty);
+          }
+
+          resetCombo();
         }
-        
-        resetCombo();
-    }
-    
 
-            bubble.addEventListener("click", (e) => {
-                if (!gameState.isPaused && gameState.isGameActive) {
-                    e.preventDefault();
-                    
-                    const rect = bubble.getBoundingClientRect();
-                    const x = rect.left + rect.width / 2;
-                    const y = rect.top + rect.height / 2;
-                    
-                    let points = 0;
-                    let soundEffect = 'pop';
-                    let particleColor = '#ffd000';
-                    
-                    switch (bubbleType) {
-                        case 'golden':
-                            points = getBubblePoints(gameState.score, 'golden', gameState.combo);
-                            soundEffect = 'golden';
-                            particleColor = '#ffd700';
-                            break;
-                        case 'poison':
-                            points = getBubblePoints(gameState.score, 'poison');
-                            soundEffect = 'poison';
-                            particleColor = '#800080';
-                            if (gameState.gameMode === 'survival') {
-                                gameState.lives--;
-                                livesCount.textContent = gameState.lives;
-                                if (gameState.lives <= 0) {
-                                    endGame();
-                                    return;
-                                }
-                            }
-                            break;
-                        case 'multiplier':
-                            points = getBubblePoints(gameState.score, 'multiplier', gameState.combo);
-                            particleColor = '#ff6b6b';
-                            break;
-                        default:
-                            points = getBubblePoints(gameState.score, 'normal', gameState.combo);
-                    }
-                    
-                    playSound(soundEffect);
-                    createParticleEffect(x, y, particleColor);
-                    updateScore(points);
-                    startPosition();
+        bubble.addEventListener("click", (e) => {
+          if (!gameState.isPaused && gameState.isGameActive) {
+            e.preventDefault();
+
+            const rect = bubble.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+
+            let points = 0;
+            let soundEffect = "pop";
+            let particleColor = "#ffd000";
+
+            switch (bubbleType) {
+              case "golden":
+                points = getBubblePoints(
+                  gameState.score,
+                  "golden",
+                  gameState.combo
+                );
+                soundEffect = "golden";
+                particleColor = "#ffd700";
+                break;
+              case "poison":
+                points = getBubblePoints(gameState.score, "poison");
+                soundEffect = "poison";
+                particleColor = "#800080";
+                if (gameState.gameMode === "survival") {
+                  gameState.lives--;
+                  livesCount.textContent = gameState.lives;
+                  if (gameState.lives <= 0) {
+                    endGame();
+                    return;
+                  }
                 }
-            });
+                break;
+              case "multiplier":
+                points = getBubblePoints(
+                  gameState.score,
+                  "multiplier",
+                  gameState.combo
+                );
+                particleColor = "#ff6b6b";
+                break;
+              default:
+                points = getBubblePoints(
+                  gameState.score,
+                  "normal",
+                  gameState.combo
+                );
+            }
 
+            playSound(soundEffect);
+            createParticleEffect(x, y, particleColor);
+            updateScore(points);
             startPosition();
-            requestAnimationFrame(onTick);
-        }
+          }
+        });
 
-        function updateBubbles(level) {
-            if (!gameState.isGameActive) return;
-            
-            const desired = getBubbleCount(level);
-            const current = bubbleContainer.children.length;
-            
-            if (desired > current) {
-                for (let i = current; i < desired; i++) {
-                    setTimeout(() => addNewBubble(i), i * 200);
-                }
-            } else if (desired < current) {
-                for (let i = current - 1; i >= desired; i--) {
-                    if (bubbleContainer.children[i]) {
-                        bubbleContainer.removeChild(bubbleContainer.children[i]);
-                    }
-                }
+        startPosition();
+        requestAnimationFrame(onTick);
+      }
+
+      function updateBubbles(level) {
+        if (!gameState.isGameActive) return;
+
+        const desired = getBubbleCount(level);
+        const current = bubbleContainer.children.length;
+
+        if (desired > current) {
+          for (let i = current; i < desired; i++) {
+            setTimeout(() => addNewBubble(i), i * 200);
+          }
+        } else if (desired < current) {
+          for (let i = current - 1; i >= desired; i--) {
+            if (bubbleContainer.children[i]) {
+              bubbleContainer.removeChild(bubbleContainer.children[i]);
             }
+          }
+        }
+      }
+
+      function startGame() {
+        gameState.isGameActive = true;
+        gameState.score = 0;
+        gameState.combo = 0;
+        gameState.poppedInRow = 0;
+        gameState.missedInRow = 0;
+
+        scoreElement.textContent = "0";
+        comboDisplay.style.display = "none";
+        gameOverScreen.style.display = "none";
+
+        setupGameMode(gameState.gameMode);
+        updateBubbles(1);
+        updateLevelVisual(1);
+
+        if (gameState.gameMode === "timed") {
+          startTimer();
         }
 
-        function startGame() {
-            gameState.isGameActive = true;
-            gameState.score = 0;
-            gameState.combo = 0;
-            gameState.poppedInRow = 0;
-            gameState.missedInRow = 0;
-            
-            scoreElement.textContent = '0';
-            comboDisplay.style.display = 'none';
-            gameOverScreen.style.display = 'none';
-            
-            setupGameMode(gameState.gameMode);
-            updateBubbles(1);
-            updateLevelVisual(1);
-            
-            if (gameState.gameMode === 'timed') {
-                startTimer();
+        controls.style.display = "none";
+        gameState.isPaused = false;
+      }
+
+      function endGame() {
+        gameState.isGameActive = false;
+        playSound("gameOver");
+
+        bubbleContainer.innerHTML = "";
+
+        finalScore.textContent = gameState.score;
+        const isNewRecord = updateHighScore();
+        newRecord.style.display = isNewRecord ? "block" : "none";
+
+        gameOverScreen.style.display = "block";
+      }
+
+      function resetGame() {
+        gameState.isGameActive = false;
+        gameState.score = 0;
+        gameState.lives = 3;
+        gameState.timeLeft = 60;
+        gameState.combo = 0;
+        gameState.isPaused = false;
+
+        bubbleContainer.innerHTML = "";
+        scoreElement.textContent = "0";
+        livesCount.textContent = "3";
+        comboDisplay.style.display = "none";
+        gameOverScreen.style.display = "none";
+
+        updateLevelVisual(1);
+        setupGameMode(gameState.gameMode);
+        gameState.isGameActive = true;
+        updateBubbles(1);
+        if (gameState.gameMode === "timed") {
+          startTimer();
+        }
+      }
+
+      window.addEventListener("keydown", (e) => {
+        if (e.code === "Space") {
+          e.preventDefault();
+          if (gameState.isGameActive) {
+            gameState.isPaused = !gameState.isPaused;
+            controls.style.display = gameState.isPaused ? "flex" : "none";
+          } else {
+            controls.style.display =
+              controls.style.display === "none" ? "flex" : "none";
+          }
+        } else if (e.code === "KeyR") {
+          e.preventDefault();
+          resetGame();
+        }
+      });
+
+      document.querySelectorAll(".mode-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          document
+            .querySelectorAll(".mode-button")
+            .forEach((b) => b.classList.remove("active"));
+          button.classList.add("active");
+          gameState.gameMode = button.dataset.mode;
+          setupGameMode(gameState.gameMode);
+        });
+      });
+
+      startGameButton.addEventListener("click", startGame);
+      resetGameButton.addEventListener("click", resetGame);
+
+      bgSelector.addEventListener("change", () => {
+        updateBackground(true);
+      });
+
+      scoreColorSelector.addEventListener("change", () => {
+        scoreElement.style.color = scoreColorSelector.value;
+      });
+
+      volumeSlider.addEventListener("input", () => {
+        audioVolume = volumeSlider.value / 100;
+      });
+
+      bubbleSelector.addEventListener("change", () => {
+        Array.from(bubbleContainer.children).forEach((bubble) => {
+          setBubbleImage(bubble);
+
+          const bubbleType = bubble.getAttribute("data-type");
+          if (bubbleType && bubbleType !== "normal") {
+            bubble.classList.add(bubbleType);
+            let indicator = bubble.querySelector(`.bubble-${bubbleType}`);
+            if (!indicator) {
+              indicator = createSpecialBubbleIndicator(bubbleType);
+              bubble.appendChild(indicator);
             }
-            
-            controls.style.display = 'none';
-            gameState.isPaused = false;
-        }
-
-        function endGame() {
-            gameState.isGameActive = false;
-            playSound('gameOver');
-            
-            bubbleContainer.innerHTML = '';
-            
-            finalScore.textContent = gameState.score;
-            const isNewRecord = updateHighScore();
-            newRecord.style.display = isNewRecord ? 'block' : 'none';
-            
-            gameOverScreen.style.display = 'block';
-        }
-
-        function resetGame() {
-            gameState.isGameActive = false;
-            gameState.score = 0;
-            gameState.lives = 3;
-            gameState.timeLeft = 60;
-            gameState.combo = 0;
-            gameState.isPaused = false;
-            
-            bubbleContainer.innerHTML = '';
-            scoreElement.textContent = '0';
-            livesCount.textContent = '3';
-            comboDisplay.style.display = 'none';
-            gameOverScreen.style.display = 'none';
-            
-            updateLevelVisual(1);
-            setupGameMode(gameState.gameMode);
-gameState.isGameActive = true;
-updateBubbles(1);
-if (gameState.gameMode === 'timed') {
-    startTimer();
-}
-        }
-
-        window.addEventListener('keydown', (e) => {
-            if (e.code === "Space") {
-                e.preventDefault();
-                if (gameState.isGameActive) {
-                    gameState.isPaused = !gameState.isPaused;
-                    controls.style.display = gameState.isPaused ? 'flex' : 'none';
-                } else {
-                    controls.style.display = controls.style.display === 'none' ? 'flex' : 'none';
-                }
-            } else if (e.code === "KeyR") {
-                e.preventDefault();
-                resetGame();
-            }
+          }
         });
+      });
 
-        document.querySelectorAll('.mode-button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.mode-button').forEach(b => b.classList.remove('active'));
-                button.classList.add('active');
-                gameState.gameMode = button.dataset.mode;
-                setupGameMode(gameState.gameMode);
-            });
-        });
+      function initGame() {
+        initAudio();
+        loadHighScore();
+        updateBackground(true);
+        setupGameMode("classic");
+        updateLevelVisual(1);
 
-        startGameButton.addEventListener('click', startGame);
-        resetGameButton.addEventListener('click', resetGame);
+        controls.style.display = "flex";
+      }
 
-        bgSelector.addEventListener("change", () => {
-            updateBackground(true);
-        });
+      window.addEventListener("load", initGame);
 
-        scoreColorSelector.addEventListener("change", () => {
-            scoreElement.style.color = scoreColorSelector.value;
-        });
-
-        volumeSlider.addEventListener('input', () => {
-            audioVolume = volumeSlider.value / 100;
-        });
-
-        bubbleSelector.addEventListener("change", () => {
-            Array.from(bubbleContainer.children).forEach(bubble => {
-                setBubbleImage(bubble);
-                
-                const bubbleType = bubble.getAttribute('data-type');
-                if (bubbleType && bubbleType !== 'normal') {
-                    bubble.classList.add(bubbleType);
-                    let indicator = bubble.querySelector(`.bubble-${bubbleType}`);
-                    if (!indicator) {
-                        indicator = createSpecialBubbleIndicator(bubbleType);
-                        bubble.appendChild(indicator);
-                    }
-                }
-            });
-        });
-
-        function initGame() {
-            initAudio();
-            loadHighScore();
-            updateBackground(true);
-            setupGameMode('classic');
-            updateLevelVisual(1);
-            
-            controls.style.display = 'flex';
-        }
-
-        window.addEventListener('load', initGame);
-        
-        document.addEventListener('click', () => {
-            if (audioContext && audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-        }, { once: true });
-
+      document.addEventListener(
+        "click",
+        () => {
+          if (audioContext && audioContext.state === "suspended") {
+            audioContext.resume();
+          }
+        },
+        { once: true }
+      );
     </script>
-</body>
+  </body>
 </html>
